@@ -1,0 +1,15 @@
+body{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    color: green;
+}
+body img{
+    width: 100%;
+    height: auto;
+}
+.contentBox{
+    width: 100%;
+    height: 700px;
+}
