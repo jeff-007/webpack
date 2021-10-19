@@ -11,7 +11,8 @@ module.exports = {
     entry: './src/main.js', // 打包入口文件
     output: {
         filename: "bundle.js",
-        path: path.join(__dirname, "output"), // 输出结果所在文件夹，必须是绝对路径
+        path: path.resolve('dist'), // 输出结果所在文件夹，必须是绝对路径
+        // path: path.join(__dirname, "output"), // 输出结果所在文件夹，必须是绝对路径
     },
     devServer: {
         // 指定额外的静态资源路径，配置后可作为开发服务器的静态资源被直接访问
@@ -28,7 +29,7 @@ module.exports = {
             }
         }
     },
-    devtool: 'source-map',
+    // devtool: 'source-map',
     // js之外的其他资源加载配置
     // 每个规则对象需设置两个对象，test：正则表达式，匹配打包过程中的文件，use：对应使用的loader
     module: {
@@ -80,7 +81,7 @@ module.exports = {
     // concatenateModules 合并模块函数
     optimization: {
         usedExports: false,
-        minimize: true,
+        minimize: false,
         concatenateModules: true
     }
 }
