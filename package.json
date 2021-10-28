@@ -12,8 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-runtime": "^7.15.8",
     "@babel/preset-env": "^7.15.0",
     "babel-loader": "^8.2.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "css-loader": "^6.2.0",
     "eslint": "^7.32.0",
@@ -25,6 +27,7 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
     "husky": "^7.0.2",
+    "lodash": "^4.17.21",
     "style-loader": "^3.2.1",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0",

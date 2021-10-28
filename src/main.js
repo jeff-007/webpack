@@ -1,7 +1,7 @@
 // import './css/index.css'
 // import defaultBg from './img/bg.jpg'
 // import createHeading from './js/heading'
-// import './js/test'
+import './js/test'
 //
 // const heading = createHeading()
 // const bg = new Image()
