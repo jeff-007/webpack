@@ -159,6 +159,21 @@ class MyPromise {
     return promise
   }
 
+  catch(failCallback) {
+    return this.then(undefined, failCallback)
+  }
+
+  // 无论当前promise对象状态为何值，传入的回调函数都会执行一次，并且
+  finally(callback) {
+    return this.then(value => {
+      callback()
+      return value
+    }, reason => {
+      callback()
+      throw reason
+    })
+  }
+
   static all(array) {
     let result = []
     let count = 0
@@ -178,6 +193,12 @@ class MyPromise {
         }
       })
     })
+  }
+
+  // 静态resolve方法，如果传入参数是promise对象直接返回该参数，否则生成一个promise对象再返回
+  static resolve(value) {
+    if (value instanceof MyPromise) return value;
+    return new MyPromise(resolve => resolve(value))
   }
 }
 function resolvePromise (promise, value, resolve, reject) {
