@@ -67,5 +67,154 @@ const generator = foo()
 const result = generator.next()
 console.log(result)
 generator.next('bar')
-generator.throw(new Error('Generator error'))
+// generator.throw(new Error('Generator error'))
+
+const PENDING = 'pending';
+const FULFILLED = 'fulfilled';
+const REJECTED = 'REJECTED'
+
+class MyPromise {
+  constructor (executor) {
+    try {
+      executor(this.resolve, this.reject)
+    } catch (e) {
+      this.reject(e)
+    }
+  }
+  // promise状态
+  // resolve，reject只能修改pending状态
+  status = PENDING
+  value = undefined
+  reason = undefined
+
+  // 保存成功回调、失败回调，在resolve或者reject之后执行，处理异步情况
+  // 定义为数组，处理多个回调函数
+  successCallback = []
+  failCallback = []
+  // 定义为箭头函数，resolve，reject函数的this指向promise实例
+  resolve = (value) => {
+    if (this.status !== PENDING) return;
+    this.status = FULFILLED
+    // 保存成功后的值
+    this.value = value
+    while(this.successCallback.length) this.successCallback.shift()()
+  }
+  reject = (reason) => {
+    if (this.status !== PENDING) return
+    this.status = REJECTED
+    // 保存失败后的原因
+    this.reason = reason
+    while(this.failCallback.length) this.failCallback.shift()()
+  }
+  // 在then方法中再创建一个promise对象，事项promise的链式调用
+  // 链式调用的then方法处理的是上一个回调函数的返回值，需要先判断该返回值是普通值还是promise对象
+  // 如果返回值是普通值，直接调用resolve，如果是promise对象，根据该promise对象的返回状态，调用resolve或者reject
+  then(successCallback, failCallback) {
+    successCallback = successCallback ? successCallback : value => value
+    failCallback = failCallback ? failCallback : reason => { throw reason }
+    const promise = new MyPromise((resolve, reject) => {
+      if (this.status === FULFILLED) {
+        // 通过setTimeout异步执行resolvePromise，为了获取new方法创建的promise实例，因为在构造函数执行过程中访问不到创建成功后的实例对象
+        setTimeout(() => {
+          try {
+            let callbackValue = successCallback(this.value)
+            resolvePromise(promise, callbackValue, resolve, reject)
+          } catch (e) {
+            reject(e)
+          }
+        }, 0)
+      } else if (this.status === REJECTED) {
+        setTimeout(() => {
+          try {
+            let callbackValue = failCallback(this.reason)
+            resolvePromise(promise, callbackValue, resolve, reject)
+          } catch (e) {
+            reject(e)
+          }
+        }, 0)
+      } else {
+        // 处理异步回调函数
+        this.successCallback.push(() => {
+          setTimeout(() => {
+            try {
+              let callbackValue = successCallback(this.value)
+              resolvePromise(promise, callbackValue, resolve, reject)
+            } catch (e) {
+              reject(e)
+            }
+          }, 0)
+        })
+        this.failCallback.push(() => {
+          setTimeout(() => {
+            try {
+              let callbackValue = failCallback(this.reason)
+              resolvePromise(promise, callbackValue, resolve, reject)
+            } catch (e) {
+              reject(e)
+            }
+          }, 0)
+        })
+      }
+    })
+    return promise
+  }
+
+  static all(array) {
+    let result = []
+    let count = 0
+    return new MyPromise((resolve, reject) => {
+      function addData (key, value) {
+        result[key] = value
+        count++
+        if (count === array.length) {
+          resolve(result);
+        }
+      }
+      array.forEach((current, index) => {
+        if (current instanceof MyPromise) {
+          current.then(value => addData(index, value), reason => reject(reason))
+        } else {
+          addData(index, current)
+        }
+      })
+    })
+  }
+}
+function resolvePromise (promise, value, resolve, reject) {
+  // 检测promise是否循环调用，循环调用示例如下
+  // const p1 = promise.then(value => {
+  //   console.log(value)
+  //   return p1
+  // })
+  if (promise === value) {
+    return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+  }
+  if (value instanceof MyPromise) {
+    value.then(resolve, reject)
+  } else {
+    resolve(value)
+  }
+}
+
+const promise = new MyPromise((resolve, reject) => {
+  resolve('成功')
+  // reject('失败')
+})
+
+function other () {
+  return new MyPromise((resolve, reject) => {
+    resolve('other')
+  })
+}
+
+// promise.then(value => {
+//   console.log(value);
+//   return other()
+// }).then(value => {
+//   console.log(value)
+// })
+
+
+
+
 
