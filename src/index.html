@@ -5,6 +5,24 @@
     <title>template title</title>
 </head>
 <body>
-<button id="btn">点击加载</button>
+<div id="#app">
+    <h1>插值表达式</h1>
+    <h3>{{ count }}</h3>
+    <button id="btn">{{ msg }}</button>
+</div>
+<script src="./js/test.js"></script>
+<script>
+    let vm = new Vue({
+      el: '#app',
+      data: {
+        msg: '点击加载',
+        count: 100,
+        person: {
+          name: 'jefferson'
+        }
+      }
+    })
+    console.log(vm)
+</script>
 </body>
 </html>
