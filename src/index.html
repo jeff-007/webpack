@@ -9,6 +9,7 @@
     <h1>插值表达式</h1>
     <h3>{{ count }}</h3>
     <button id="btn">{{ msg }}</button>
+    <input v-model="msg" id="input" type="text">
 </div>
 <script src="./js/test.js"></script>
 <script>
@@ -22,7 +23,8 @@
         }
       }
     })
-    console.log(vm)
+    let a = document.getElementById('input')
+    console.dir(a)
 </script>
 </body>
 </html>

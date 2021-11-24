@@ -271,7 +271,6 @@ class Vue {
     new Observer(this.$data)
     // 4. 调用compiler对象，解析指令和插值表达式并替换成相应的数据
     new Compiler(this)
-    console.log(123)
   }
   _proxyData(data) {
     // 遍历data对象中的所有属性
@@ -384,11 +383,16 @@ class Compiler {
       node.textContent = newValue
     })
   }
+  // 处理v-model指令
   modelUpdater(node, value, key) {
     node.value = value
     // 创建watcher对象，当数据改变时更新视图
     new Watcher(this.vm, key, (newValue) => {
       node.value = newValue
+    })
+    // 处理双向绑定，监听节点的input事件，并将绑定的属性更新为input事件更新的值
+    node.addEventListener('input', () => {
+      this.vm[key] = node.value
     })
   }
 
